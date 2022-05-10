@@ -119,6 +119,21 @@ for all of the events. If you used a `prefix` in the config file then this shoul
 https://example.com/your-prefix/email-log/webhooks/event
 ```
 
+## Upgrade from 5.1.0 to 5.2.0 - BREAKING CHANGE
+
+Add the following parameters to the end of the `config/email_log.php` array:
+
+```
+    ...
+    
+    'routes_webhook_prefix' => env('EMAIL_LOG_ROUTES_WEBHOOK_PREFIX', env('EMAIL_LOG_ROUTES_PREFIX','')),
+    'mailgun' => [
+        'secret' => env('MAILGUN_SECRET', null),
+        'filter_unknown_emails' => env('EMAIL_LOG_MAILGUN_FILTER_UNKNOWN_EMAILS', true),
+    ],
+```
+
+
 ## Upgrade from 5.0.3 to 5.1.0 - BREAKING CHANGE
 
 As email log attachments might quickly grow to large size you'd want to use some external storage to save them. To enable this we need to utilize the Laravel's Filesystem. Follow the guide below if you were using the 5.0.3 and wish to upgrade to 5.1.0.
