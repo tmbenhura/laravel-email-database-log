@@ -125,7 +125,7 @@ Add the following parameters to the end of the `config/email_log.php` array:
 
 ```
     ...
-    
+
     'routes_webhook_prefix' => env('EMAIL_LOG_ROUTES_WEBHOOK_PREFIX', env('EMAIL_LOG_ROUTES_PREFIX','')),
     'mailgun' => [
         'secret' => env('MAILGUN_SECRET', null),
@@ -135,6 +135,8 @@ Add the following parameters to the end of the `config/email_log.php` array:
 
 
 ## Upgrade from 5.0.3 to 5.1.0 - BREAKING CHANGE
+
+IMPORTANT - please upgrade to 5.2.1 right away as there are some fixes for the 5.1.0 upgrade. I was hastly and missed some issues which are corrected in 5.2.1.
 
 As email log attachments might quickly grow to large size you'd want to use some external storage to save them. To enable this we need to utilize the Laravel's Filesystem. Follow the guide below if you were using the 5.0.3 and wish to upgrade to 5.1.0.
 
@@ -162,3 +164,13 @@ In `config/filesystems.php` add
 
 the `'root'` must point to the folder where you were previously saving the attachements.
 
+You will also need to drop the current prefix from the `email_log.attachments` column (default was `email_log_attachments`). For example `email_log_attachments/12345678910/my_file.jpg` should be renamed to `12345678910/my_file.jpg`.
+
+You can run following code using `php artisan tinker` to fix these issues. Depending on the amount of data, it could take some time to finish:
+
+```
+$log = Dmcbrn\LaravelEmailDatabaseLog\EmailLog::where('attachments','!=', null)
+$log->count()
+$log->chunk(100, function($chunk) { foreach($chunk as $l) { $l->attachments = str_replace('email_log_attachments/', '', $l->attachments); $l->save(); } })
+
+```

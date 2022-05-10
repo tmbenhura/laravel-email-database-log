@@ -51,8 +51,8 @@ class EmailLogController extends Controller {
         $email = EmailLog::select('id','attachments')->find($id);
         $attachmentFullPath = explode(', ',$email->attachments)[$attachment];
 
-        $file = Storage::get(urldecode($attachmentFullPath));
-        $mimeType = Storage::mimeType(urldecode($attachmentFullPath));
+        $file = Storage::disk(config('email_log.disk'))->get(urldecode($attachmentFullPath));
+        $mimeType = Storage::disk(config('email_log.disk'))->mimeType(urldecode($attachmentFullPath));
 
         return response($file, 200)->header('Content-Type', $mimeType);
     }
