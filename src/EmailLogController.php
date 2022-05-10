@@ -84,7 +84,7 @@ class EmailLogController extends Controller {
         $emails = EmailLog::select('id', 'date', 'messageId')->where('date', '<=', date("c", strtotime($request->date)))->get();
 
         //delete attachments & emails
-        foreach ($emails as $email) { Storage::deleteDirectory(config('email_log.folder') . '/' . $email->messageId); }
+        foreach ($emails as $email) { Storage::disk(config('email_log.disk'))->deleteDirectory($email->messageId); }
         $deleted = EmailLog::destroy($emails->pluck('id'));
 
         //return

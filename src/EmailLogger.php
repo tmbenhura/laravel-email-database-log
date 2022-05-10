@@ -23,8 +23,8 @@ class EmailLogger
         foreach ($message->getChildren() as $child) {
             //docs for this below: http://phpdox.de/demo/Symfony2/classes/Swift_Mime_SimpleMimeEntity/getChildren.xhtml
             if(in_array(get_class($child),['Swift_EmbeddedFile','Swift_Attachment'])) {
-                $attachmentPath = config('email_log.folder') . '/' . $messageId . '/' . $child->getFilename();
-                Storage::put($attachmentPath, $child->getBody());
+                $attachmentPath = $messageId . '/' . $child->getFilename();
+                Storage::disk(config('email_log.disk'))->put($attachmentPath, $child->getBody());
                 $attachments[] = $attachmentPath;
             }
         }

@@ -9,6 +9,10 @@ For Laravel 6 - use 3.* versions
 
 For Laravel 7 - use 4.* versions
 
+For Laravel 8 - use 5.* versions
+
+Version 5.1 is using Filesystems which is a breaking change from 5.3. See below for upgrade information.
+
 # Installation
 
 ## Step 1: Composer
@@ -49,8 +53,8 @@ php artisan vendor:publish --provider="Dmcbrn\LaravelEmailDatabaseLog\LaravelEma
 Config contains three parameters:
 
 ```php
-//name of the folder where the attachments will be saved
-'folder' => env('EMAIL_LOG_ATTACHMENT_FOLDER','email_log_attachments'),
+//name of the disk where the attachments will be saved
+'disk' => env('EMAIL_LOG_DISK','email_log_attachments'),
 //to prevent access to list of logged emails add a middlewares. Multiple middlewares can be used (separate by comma)
 'access_middleware' => env('EMAIL_LOG_ACCESS_MIDDLEWARE',null),
 //this parameter prefixes the routes for listing of logged emails
@@ -61,7 +65,16 @@ Config contains three parameters:
 
 After installation, any email sent by your website will be logged to `email_log` table in the site's database.
 
-Any attachments will be saved in `storage/email_log_attachments` folder. The `email_log_attachments` can be changed by publishing the config file and changing the 'folder' value.
+Any attachments will be saved in `storage/email_log_attachments` disk. The `email_log_attachments` can be changed by publishing the config file and changing the 'folder' value.
+
+You also need to add the following disk in the `config/filesystems.php` file:
+
+```
+'email_log_attachments' => [
+    'driver' => 'local',
+    'root' => storage_path('app/email_log_attachments'),
+],
+```
 
 If you want to process the logged email or save/format some additional data on your system you can hook up to the `Dmcbrn\LaravelEmailDatabaseLog\LaravelEvents\EmailLogged` event via a Laravel listener:
 
@@ -105,3 +118,32 @@ for all of the events. If you used a `prefix` in the config file then this shoul
 ```
 https://example.com/your-prefix/email-log/webhooks/event
 ```
+
+## Upgrade from 5.0.3 to 5.1.0 - BREAKING CHANGE
+
+As email log attachments might quickly grow to large size you'd want to use some external storage to save them. To enable this we need to utilize the Laravel's Filesystem. Follow the guide below if you were using the 5.0.3 and wish to upgrade to 5.1.0.
+
+Change a line in `config/email_log.php` file from:
+
+```
+'folder' => env('EMAIL_LOG_ATTACHMENT_FOLDER','email_log_attachments'),
+```
+
+to
+
+```
+'disk' => env('EMAIL_LOG_DISK','email_log_attachments'),
+```
+
+In `config/filesystems.php` add 
+
+
+```
+'email_log_attachments' => [
+    'driver' => 'local',
+    'root' => storage_path('app/email_log_attachments'),
+],
+```
+
+the `'root'` must point to the folder where you were previously saving the attachements.
+
