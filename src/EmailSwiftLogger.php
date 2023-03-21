@@ -6,7 +6,7 @@ use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Storage;
 use Dmcbrn\LaravelEmailDatabaseLog\LaravelEvents\EmailLogged;
 
-class EmailLogger
+class EmailSwiftLogger
 {
     /**
      * Handle the event.
