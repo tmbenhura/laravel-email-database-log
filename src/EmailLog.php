@@ -49,6 +49,15 @@ class EmailLog extends Model
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+
+    /**
      * The Events belonging to this Email.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
