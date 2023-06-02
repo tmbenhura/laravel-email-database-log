@@ -44,6 +44,28 @@ class EmailLoggingTest extends TestCase
         );
     }
 
+    public function test_raw_emails_are_logged_to_the_database(): void
+    {
+        Mail::raw('Plain text string', function ($message): void {
+            $message->to('email@example.com');
+            $message->subject('The e-mail subject');
+        });
+
+        $this->assertDatabaseHas(
+            'email_log',
+            [
+                'date' => now()->format('Y-m-d H:i:s'),
+                'from' => 'Example <hello@example.com>',
+                'to' => 'email@example.com',
+                'cc' => null,
+                'bcc' => null,
+                'subject' => 'The e-mail subject',
+                'body' => 'Plain text string',
+                'attachments' => null,
+            ]
+        );
+    }
+
     public function test_multiple_recipients_are_comma_separated(): void
     {
         Mail::to(['email@example.com', 'email2@example.com'])

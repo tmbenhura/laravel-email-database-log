@@ -35,7 +35,7 @@ class EmailSymfonyLogger
             'cc' => $this->formatAddressField($message, 'Cc'),
             'bcc' => $this->formatAddressField($message, 'Bcc'),
             'subject' => $message->getSubject(),
-            'body' => $message->getHtmlBody(),
+            'body' => $message->getHtmlBody() ?? $message->getTextBody(),
             'headers' => $message->getHeaders()->toString(),
             'attachments' => empty($attachments) ? null : implode(', ', $attachments),
             'messageId' => $messageId,
